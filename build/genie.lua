@@ -62,7 +62,8 @@ includedirs{
 }
 
 libdirs {
-  PROJ_DIR .. "/bin",
+  -- // SDL2 Libs
+  PROJ_DIR .. "/deps/SDL2/libs",
 }
 
 links {
