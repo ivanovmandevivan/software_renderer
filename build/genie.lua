@@ -58,7 +58,8 @@ files {
 }
 
 includedirs{
-  IncludeDir["SDL2"]
+  IncludeDir["SDL2"],
+  IncludeDir["SFW_RENDERER"]
 }
 
 libdirs {
@@ -77,14 +78,16 @@ flags{"Symbols" }
 
 configuration "Debug"
   defines {
-    "DEBUG"
+    "DEBUG",
   }
 
 configuration "windows"
   
-  defines {}
+  defines {
+    "SFW_RENDERER_WINDOWS_PLATFORM"
+  }
 
 configuration "linux"
   defines {
-    "CPUR_LINUX_PLATFORM"
+    "SFW_RENDERER_LINUX_PLATFORM"
   }
