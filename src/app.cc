@@ -11,6 +11,15 @@ bool Application::Initialize()
 {
 				bool isSuccessful = true;
 
+				if (!display.Initialize()) {
+								isSuccessful = false;
+								fprintf(stderr, "Could not initialize window. [Display Class]\n");
+				}
+				else {
+								// Only if Display is initialized we can continue.
+
+
+				}
 
 
 				return isSuccessful;

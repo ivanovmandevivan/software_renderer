@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include "platform_types.h"
 
+#include "display.h"
+
 class Application {
 
 public:
@@ -20,6 +22,8 @@ public:
 
 				void Update();
 				void Shutdown();
+
+				Display display;
 
 };
 

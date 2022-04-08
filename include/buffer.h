@@ -8,6 +8,7 @@
 template<class T>
 class Buffer {
 
+public:
 
 				Buffer(s32 mWidth, s32 mHeight, T* mArray) : width(mWidth), height(mHeight), 
 								pitch(mWidth * sizeof(T)), buffer(mArray), pixelCount(mWidth* mHeight) {};
