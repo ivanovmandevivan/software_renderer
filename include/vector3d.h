@@ -15,30 +15,6 @@ public:
 				Vector3(T x1, T y1, T z1) : x(x1), y(y1), z(z1), w(1) {};
 				~Vector3() {};
 
-				Vector3 &perspectiveDivide();
-
-				// Scalar
-				Vector3 operator-() const;
-				Vector3 operator*(const T v) const;
-				Vector3 operator+(const T v) const;
-
-				// Operations
-				Vector3 operator-(const Vector3 &v) const;
-				Vector3 operator+(const Vector3 &v) const;
-				void operator+=(const Vector3 &v);
-				void operator-=(const Vector3 &v);
-				Vector3 operator*(const Vector3 &v) const;
-				Vector3 crossProduct(const Vector3 &v) const;
-				T dotProduct(const Vector3 &v) const;
-				T dot2D(const Vector3 &v) const;
-				T sqrLength() const;
-				T length() const;
-				Vector3& normalized();
-
-				static Vector3 reflect(const Vector3 &i, const Vector3 &n);
-				void print() const;
-				void zero();
-
 				// Variables:
 
 				T x;
@@ -57,15 +33,26 @@ public:
 								return *this;
 				}
 
-				Vector3 operator-() const {
+
+				inline float triangleAreaSquared(const Vector3& b, const Vector3& c) {
+								float x1 = b.x - x;
+								float y1 = b.y - y;
+
+								float x2 = c.x - x;
+								float y2 = c.y - y;
+
+								return (x1 * y2 - x2 * y1);
+				}
+
+				inline Vector3 operator-() const {
 								return Vector3(-x, -y, -z);
 				}
 
-				Vector3 operator*(const T v) const {
+				inline Vector3 operator*(const T v) const {
 								return Vector3(x * v, y * v, z * v);
 				}
 
-				Vector3 operator+(const T v) const {
+				inline Vector3 operator+(const T v) const {
 								return Vector3(x + v, y + v, z + v);
 				}
 
@@ -140,7 +127,7 @@ public:
 								printf(out.c_str(), x, y, z);
 				}
 
-				void zero() {
+				inline void zero() {
 								x = 0;
 								y = 0;
 								z = 0;

@@ -11,16 +11,17 @@ bool Application::Initialize()
 {
 				bool isSuccessful = true;
 
-				if (!display.Initialize()) {
+				if (!displayManager.Initialize()) {
 								isSuccessful = false;
 								fprintf(stderr, "Could not initialize window. [Display Class]\n");
 				}
 				else {
 								// Only if Display is initialized we can continue.
-
-
+								if (!renderManager.Initialize(displayManager)) {
+												isSuccessful = false;
+												fprintf(stderr, "Failed to initialize Render Manager. [Application.Initialize]\n");
+								}
 				}
-
 
 				return isSuccessful;
 }
@@ -78,6 +79,7 @@ void Application::Update()
 								start = SDL_GetTicks();
 								Input(end, deltaTime);
 
+								renderManager.Render();
 
 								deltaTime = SDL_GetTicks() - start;
 								printf("[F%d]: Delta Time (ms): %d\n", countFrames, deltaTime);
@@ -89,4 +91,6 @@ void Application::Update()
 
 void Application::Shutdown()
 {
+				renderManager.Shutdown();
+				displayManager.Shutdown();
 }

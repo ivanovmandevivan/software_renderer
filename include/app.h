@@ -7,6 +7,7 @@
 #include "platform_types.h"
 
 #include "display.h"
+#include "render_manager.h"
 
 class Application {
 
@@ -23,7 +24,8 @@ public:
 				void Update();
 				void Shutdown();
 
-				Display display;
+				Display displayManager;
+				RenderManager renderManager;
 
 };
 
