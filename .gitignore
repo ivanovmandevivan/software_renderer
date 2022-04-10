@@ -33,3 +33,7 @@
 
 bin/
 build/
+
+# Allowed
+!bin/SDL2.dll
+!build/genie.exe
