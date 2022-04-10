@@ -1,3 +1,5 @@
+!*/
+
 # Prerequisites
 *.d
 
@@ -31,9 +33,18 @@
 *.out
 *.app
 
-bin/
-build/
+#build/
+
+bin/*.pdb
+bin/x64
+bin/x32
+
+build/*.sln
+build/*.vcxproj
+build/*.vcxproj.filters
+build/*.vcxproj.user
+build/.vs/
 
 # Allowed
-!bin/SDL2.dll
-!build/genie.exe
+!/bin/SDL2.dll
+!/build/genie.exe
