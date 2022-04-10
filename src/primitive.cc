@@ -1,6 +1,7 @@
 
 #include "primitive.h"
 #include "display.h"
+#include "matrix.h"
 
 Primitive::Primitive() {
 				// Creation of Raster Buffer for xMin / xMax per height:
@@ -29,11 +30,20 @@ void Primitive::FillShape(Buffer<u32>* buffer, int yMin, int yMax)
 
 void Primitive::FillTriangle(Buffer<u32>* buffer, Vector3f& v1, Vector3f& v2, Vector3f& v3)
 {
-				Vector3f minYVert = v1;
-				Vector3f midYVert = v2;
-				Vector3f maxYVert = v3;
+				int screenWidth = Display::kSCREEN_WIDTH;
+				int screenHeight = Display::kSCREEN_HEIGHT;
+				Matrix4 screenSpaceMat = Matrix4::screenSpaceTransformMat((float)screenWidth / 2.0f, (float)screenHeight / 2.0f);
 
-				if (maxYVert.y > midYVert.y) {
+				Vector3f minYVert = v1.perspectiveDivide();
+				Vector3f midYVert = v2.perspectiveDivide();
+				Vector3f maxYVert = v3.perspectiveDivide();
+
+				minYVert = screenSpaceMat.matMultVec(minYVert);
+				midYVert = screenSpaceMat.matMultVec(midYVert);
+				maxYVert = screenSpaceMat.matMultVec(maxYVert);
+
+
+				if (maxYVert.y < midYVert.y) {
 								Vector3f tmp = maxYVert;
 								maxYVert = midYVert;
 								midYVert = tmp;
@@ -43,6 +53,12 @@ void Primitive::FillTriangle(Buffer<u32>* buffer, Vector3f& v1, Vector3f& v2, Ve
 								Vector3f tmp = midYVert;
 								midYVert = minYVert;
 								minYVert = tmp;
+				}
+
+				if (maxYVert.y < midYVert.y) {
+								Vector3f tmp = maxYVert;
+								maxYVert = midYVert;
+								midYVert = tmp;
 				}
 
 				float area = minYVert.triangleAreaSquared(maxYVert, midYVert);
@@ -62,7 +78,7 @@ void Primitive::ScanConvertLine(const Vector3f& minYVert, const Vector3f& maxYVe
 				float yDist = yEnd - yStart;
 				float xDist = xEnd - xStart;
 
-				if (yDist < 0.0f) return;
+				if (yDist <= 0.0f) return;
 
 				float xStep = xDist/yDist;
 				float currX = xStart;

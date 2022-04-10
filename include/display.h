@@ -9,8 +9,8 @@ class Display {
 
 public:
 				
-				static const u32 kSCREEN_WIDTH = 640;
-				static const u32 kSCREEN_HEIGHT = 480;
+				static const u32 kSCREEN_WIDTH = 1280;
+				static const u32 kSCREEN_HEIGHT = 720;
 				static const u32 SCREEN_PITCH = kSCREEN_HEIGHT * sizeof(u32);
 				constexpr static const float SCREEN_ASPECT_RATIO = kSCREEN_WIDTH / (float)kSCREEN_HEIGHT;
 

@@ -28,8 +28,10 @@ bool Display::Initialize()
 
 void Display::Shutdown()
 {
-				SDL_DestroyWindow(window);
-				window = nullptr;
+				if (window != nullptr) {
+								SDL_DestroyWindow(window);
+								window = nullptr;
+				}
 				SDL_Quit();
 }
 

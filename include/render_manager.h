@@ -15,7 +15,7 @@ public:
 				bool Initialize(Display &display);
 				void Shutdown();
 
-				void Render();
+				void Render(float dt);
 
 private:
 
@@ -24,6 +24,7 @@ private:
 				Display *screen;
 				RenderTarget mainRenderTarget;
 				Primitive *basicPrimitive;
+				float rotCount;
 
 };
 

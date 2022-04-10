@@ -79,14 +79,14 @@ void Application::Update()
 								start = SDL_GetTicks();
 								Input(end, deltaTime);
 
-								renderManager.Render();
+								renderManager.Render(deltaTime);
 
 								deltaTime = SDL_GetTicks() - start;
 								printf("[F%d]: Delta Time (ms): %d\n", countFrames, deltaTime);
 								total += deltaTime;
 				}
 				printf("Shutting down...\n");
-				printf("Average frame time over %d frames: %2.fms \n", countFrames, total/(float)countFrames);
+				printf("Average frame time over %d frames: %2.fms \n", countFrames, (float)(total/countFrames));
 }
 
 void Application::Shutdown()

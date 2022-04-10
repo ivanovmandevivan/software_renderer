@@ -4,35 +4,16 @@
 
 #include "vector3d.h"
 
-#define PI 3.14159265359
 
 class Matrix4 {
 
 public:
-				Matrix4() {};
+				Matrix4() {
+								for (int i = 0; i < 16; ++i) {
+												m[i] = 0.0f;
+								}
+				};
 				~Matrix4() {};
-
-				float& operator()(size_t y, size_t x);
-				Matrix4 operator*(Matrix4 &other);
-				Vector3f matMultVec(const Vector3f &vec);
-				Vector3f matMultDir(const Vector3f &vec);
-				Matrix4 transpose();
-				Matrix4 inverse();
-
-				static Matrix4 identity();
-				static Matrix4 testMat();
-
-				// ZYX Rotation
-				static Matrix4 rotMat(float rotX, float rotY, float rotZ);
-				static Matrix4 scaleMat(float scaleX, float scaleY, float scaleZ);
-				static Matrix4 translateMat(float dx, float dy, float dz);
-
-				static Matrix4 transformMat(Vector3f &translate, Vector3f &rotation, Vector3f &scale = Vector3f(1.0f, 1.0f, 1.0f));
-				static Matrix4 lookAt(Vector3f& eye, Vector3f& at, Vector3f& tmp);
-				static Matrix4 projectionMat(float fov, float ar, float near, float far);
-				
-				void print();
-
 
 				// Column Major Index Retrieving: [Memory is stored as Row Major because it's a linear buffer]
 				inline float& operator()(size_t y, size_t x) {
@@ -60,12 +41,14 @@ public:
 				}
 
 				inline Vector3f matMultVec(const Vector3f& vec) {
-								Vector3f newVec = Vector3f(0.0f, 0.0f, 0.0f);
+								Vector3f newVec = Vector3f(0.0f, 0.0f, 1.0f);
+								float w2 = 0.0f;
 
-								newVec.x = vec.x * (*this)(0, 0) + vec.y * (*this)(0, 1) + vec.z * (*this)(0, 2) + (*this)(0, 3); // W is always 1.0
-								newVec.y = vec.x * (*this)(1, 0) + vec.y * (*this)(1, 1) + vec.z * (*this)(1, 2) + (*this)(1, 3); // W is always 1.0
-								newVec.z = vec.x * (*this)(2, 0) + vec.y * (*this)(2, 1) + vec.z * (*this)(2, 2) + (*this)(2, 3); // W is always 1.0
-								newVec.w = vec.x * (*this)(3, 0) + vec.y * (*this)(3, 1) + vec.z * (*this)(3, 2) + (*this)(3, 3); // W is always 1.0
+								newVec.x = vec.x * (*this)(0, 0) + vec.y * (*this)(1, 0) + vec.z * (*this)(2, 0) + (*this)(3, 0); // W is always 1.0
+								newVec.y = vec.x * (*this)(0, 1) + vec.y * (*this)(1, 1) + vec.z * (*this)(2, 1) + (*this)(3, 1); // W is always 1.0
+								newVec.z = vec.x * (*this)(0, 2) + vec.y * (*this)(1, 2) + vec.z * (*this)(2, 2) + (*this)(3, 2); // W is always 1.0
+								w2 = vec.x * (*this)(0, 3) + vec.y * (*this)(1, 3) + vec.z * (*this)(2, 3) + (*this)(3, 3); // W is always 1.0
+								newVec.w = w2;
 
 								return newVec;
 				}
@@ -242,6 +225,9 @@ public:
 
 				inline static Matrix4 identity() {
 								Matrix4 identityMat;
+
+
+
 								identityMat(0, 0) = 1.0f;
 								identityMat(1, 1) = 1.0f;
 								identityMat(2, 2) = 1.0f;
@@ -264,7 +250,7 @@ public:
 				}
 
 				// ZYX Rotation
-				static Matrix4 rotMat(float rotX, float rotY, float rotZ) {
+				inline static Matrix4 rotMat(float rotX, float rotY, float rotZ) {
 								Matrix4 rotationMatrix;
 
 								float cosX = cos(rotX);
@@ -297,7 +283,7 @@ public:
 								return rotationMatrix;
 				}
 
-				static Matrix4 scaleMat(float scaleX, float scaleY, float scaleZ) {
+				inline static Matrix4 scaleMat(float scaleX, float scaleY, float scaleZ) {
 								Matrix4 scaleMatrix;
 								scaleMatrix(0, 0) = scaleX;
 								scaleMatrix(1, 1) = scaleY;
@@ -307,7 +293,7 @@ public:
 								return scaleMatrix;
 				}
 
-				static Matrix4 translateMat(float dx, float dy, float dz) {
+				inline static Matrix4 translateMat(float dx, float dy, float dz) {
 								Matrix4 translateMatrix;
 
 								// We internally set scale matrix to 1.0f default.
@@ -364,19 +350,39 @@ public:
 
 				inline static Matrix4 projectionMat(float fov, float ar, float near, float far) {
 								Matrix4 projMatrix;
-								float tanHalfFOVInverse = 1.0f / tan((fov/2) * (PI / 180));
-
-								// First Row;
-								projMatrix(0, 0) = tanHalfFOVInverse;
-								// Second Row;
-								projMatrix(1, 1) = ar * tanHalfFOVInverse;
-								// Third Row;
-								projMatrix(2, 2) = (near) / (far - near);
-								projMatrix(2, 3) = (far * near) / (far - near);
-								// Fourth Row;
-								projMatrix(3, 2) = -1;
+								
+								projMatrix(0, 0) = 1 / (ar * tan(fov * 0.5));
+								projMatrix(1, 1) = 1 / tan(fov * 0.5);
+								projMatrix(2, 2) = (near + far) / (near - far);
+								projMatrix(3, 2) = (2 * far * near) / (near - far);
+								projMatrix(2, 3) = -1;
+								projMatrix(3, 3) = 0;
 
 								return projMatrix;
+				}
+
+				inline static Matrix4 orthoMat(float right, float left, float top, float bottom, float near, float far) {
+								Matrix4 orthoMat;
+
+								orthoMat(0,0) = 2.0f / (right - left);
+								orthoMat(3, 0) -((right + left) / (right - left));
+								orthoMat(1, 1) = 2.0f / (top - bottom);
+								orthoMat(3, 1) = -((top + bottom) / (top - bottom));
+								orthoMat(2, 2) = 2.0f / (far - near);
+								orthoMat(3, 2) = -((far + near)/(far - near));
+
+								return orthoMat;
+				}
+
+				inline static Matrix4 screenSpaceTransformMat(float halfWidth, float halfHeight) {
+								Matrix4 screenSpaceMat = Matrix4::identity();
+								
+								screenSpaceMat(0, 0) = halfWidth;
+								screenSpaceMat(3, 0) = halfWidth;
+								screenSpaceMat(1, 1) = halfHeight;
+								screenSpaceMat(3, 1) = halfHeight;
+
+								return screenSpaceMat;
 				}
 
 				inline void print() {
