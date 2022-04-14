@@ -44,11 +44,34 @@ public:
 								Vector3f newVec = Vector3f(0.0f, 0.0f, 1.0f);
 								float w2 = 0.0f;
 
-								newVec.x = vec.x * (*this)(0, 0) + vec.y * (*this)(1, 0) + vec.z * (*this)(2, 0) + (*this)(3, 0); // W is always 1.0
-								newVec.y = vec.x * (*this)(0, 1) + vec.y * (*this)(1, 1) + vec.z * (*this)(2, 1) + (*this)(3, 1); // W is always 1.0
-								newVec.z = vec.x * (*this)(0, 2) + vec.y * (*this)(1, 2) + vec.z * (*this)(2, 2) + (*this)(3, 2); // W is always 1.0
-								w2 = vec.x * (*this)(0, 3) + vec.y * (*this)(1, 3) + vec.z * (*this)(2, 3) + (*this)(3, 3); // W is always 1.0
+								newVec.x = vec.x * (*this)(0, 0) + 
+																			vec.y * (*this)(0, 1) + 
+																			vec.z * (*this)(0, 2) + 
+																			(*this)(0, 3); // W is always 1.0
+								
+								newVec.y = vec.x * (*this)(1, 0) + 
+																			vec.y * (*this)(1, 1) + 
+																			vec.z * (*this)(1, 2) + 
+																			(*this)(1, 3); // W is always 1.0
+								
+								newVec.z = vec.x * (*this)(2, 0) + 
+																			vec.y * (*this)(2, 1) + 
+																			vec.z * (*this)(2, 2) + 
+																			(*this)(2, 3); // W is always 1.0
+								
+								w2 = vec.x * (*this)(3, 0) + 
+													vec.y * (*this)(3, 1) + 
+													vec.z * (*this)(3, 2) + 
+													(*this)(3, 3); // -Pz when multiplied with -1 from the projection.
+								
 								newVec.w = w2;
+
+								//newVec.x = (*this)(0, 0) * vec.x + (*this)(0, 1) * vec.y + (*this)(0, 2) * vec.z + (*this)(0, 3) * vec.w;
+								//newVec.y = (*this)(1, 0) * vec.x + (*this)(1, 1) * vec.y + (*this)(1, 2) * vec.z + (*this)(1, 3) * vec.w;
+								//newVec.z = (*this)(2, 0) * vec.x + (*this)(2, 1) * vec.y + (*this)(2, 2) * vec.z + (*this)(2, 3) * vec.w;
+								//w2 = (*this)(3, 0) * vec.x + (*this)(3, 1) * vec.y + (*this)(3, 2) * vec.z + (*this)(3, 3) * vec.w;
+
+								//newVec.w = w2;
 
 								return newVec;
 				}
@@ -251,7 +274,7 @@ public:
 
 				// ZYX Rotation
 				inline static Matrix4 rotMat(float rotX, float rotY, float rotZ) {
-								Matrix4 rotationMatrix;
+								Matrix4 rotationMatrix = Matrix4::identity();
 
 								float cosX = cos(rotX);
 								float sinX = sin(rotX);
@@ -284,7 +307,7 @@ public:
 				}
 
 				inline static Matrix4 scaleMat(float scaleX, float scaleY, float scaleZ) {
-								Matrix4 scaleMatrix;
+								Matrix4 scaleMatrix = Matrix4::identity();
 								scaleMatrix(0, 0) = scaleX;
 								scaleMatrix(1, 1) = scaleY;
 								scaleMatrix(2, 2) = scaleZ;
@@ -294,7 +317,7 @@ public:
 				}
 
 				inline static Matrix4 translateMat(float dx, float dy, float dz) {
-								Matrix4 translateMatrix;
+								Matrix4 translateMatrix = Matrix4::identity();
 
 								// We internally set scale matrix to 1.0f default.
 								translateMatrix(0, 0) = 1.0f;
@@ -313,8 +336,9 @@ public:
 								Matrix4 rotMatrix = Matrix4::rotMat(rotation.x, rotation.y, rotation.z);
 								Matrix4 scaleMatrix = Matrix4::scaleMat(scale.x, scale.y, scale.z);
 								Matrix4 translateMatrix = Matrix4::translateMat(translate.x, translate.y, translate.z);
-
-								return translateMatrix * (rotMatrix * scaleMatrix); // TRS
+								
+								Matrix4 tmp = (rotMatrix * scaleMatrix);
+								return translateMatrix * tmp; // TRS
 				}
 
 				inline static Matrix4 lookAt(Vector3f& eye, Vector3f& at, Vector3f& tmp) {
@@ -349,14 +373,33 @@ public:
 				}
 
 				inline static Matrix4 projectionMat(float fov, float ar, float near, float far) {
-								Matrix4 projMatrix;
+								Matrix4 projMatrix = Matrix4::identity();
 								
-								projMatrix(0, 0) = 1 / (ar * tan(fov * 0.5));
+								/*projMatrix(0, 0) = 1 / (ar * tan(fov * 0.5));
 								projMatrix(1, 1) = 1 / tan(fov * 0.5);
 								projMatrix(2, 2) = (near + far) / (near - far);
 								projMatrix(3, 2) = (2 * far * near) / (near - far);
-								projMatrix(2, 3) = -1;
-								projMatrix(3, 3) = 0;
+								projMatrix(2, 3) = 1;
+								projMatrix(3, 3) = 0;*/
+
+
+								float tanHalfFOVInverse = 1.0f / tanf((fov * 0.5f) * (M_PI / 180.0f));
+								projMatrix(0, 0) = tanHalfFOVInverse;
+								projMatrix(1, 1) = ar * tanHalfFOVInverse;
+								projMatrix(2, 2) = (near) / (far - near);
+								projMatrix(2, 3) = (far * near) / (far - near);
+								projMatrix(3, 2) = -1.0f;
+								projMatrix(3, 3) = 0.0f;
+
+								//float tanHalfFOV = tanf(fov * 0.5f);
+								//float zRange = near - far;
+
+								//projMatrix(0, 0) = 1.0f / (tanHalfFOV * ar);
+								//projMatrix(1, 1) = 1.0f / tanHalfFOV;
+								//projMatrix(2, 2) = (-near - far) / zRange;
+								//projMatrix(2, 3) = 2 * far * near / zRange;
+								//projMatrix(3, 2) = 1.0f;
+								//projMatrix(3, 3) = 0.0f;
 
 								return projMatrix;
 				}
@@ -383,6 +426,18 @@ public:
 								screenSpaceMat(3, 1) = halfHeight;
 
 								return screenSpaceMat;
+				}
+
+				// Normalize NDC range from -1, 1 to 0, 1 and map to screen spaace with width & height.
+				inline static Vector3f NDCToScreenSpace(Vector3f& vert, int width, int height) {
+								Vector3f res = Vector3f(0.0f, 0.0f, 0.0f);
+
+								res.x = floor(0.5f * width * (vert.x + 1));
+								res.y = floor(0.5f * height * (vert.y + 1));
+								res.z = vert.z;
+								res.w = vert.w;
+
+								return res;
 				}
 
 				inline void print() {

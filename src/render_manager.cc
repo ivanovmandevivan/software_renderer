@@ -16,7 +16,6 @@ bool RenderManager::Initialize(Display& display)
 								return false;
 				}
 
-				basicPrimitive = new Primitive();
 				rotCount = 0.0f;
 
 				return true;
@@ -33,8 +32,8 @@ void RenderManager::Render(float dt)
 				mainRenderTarget.clearBuffers();
 
 				Vector3f minYVert = Vector3f(-1.0f, -1.0f, 1.0f);
-				Vector3f midYVert = Vector3f(1.0f, -1.0f, 1.0f);
-				Vector3f maxYVert = Vector3f(0.0f, 1.0f, 1.0f);
+				Vector3f midYVert = Vector3f(0.0f, 1.0f, 1.0f);
+				Vector3f maxYVert = Vector3f(1.0f, -1.0f, 1.0f);
 
 
 				// Here we can draw all the different models we pretend to draw:
@@ -78,18 +77,11 @@ void RenderManager::Render(float dt)
 
 				// # LINE RENDERING ^^
 
-
-				float testRotRad = 25.0f * (M_PI / 180.0f);
-
 				rotCount += (dt * 0.05f);
-
 				Matrix4 model = Matrix4::identity();
-				model = model * Matrix4::transformMat(Vector3f(0.0f, 0.0f, 0.0f), Vector3f(rotCount * (M_PI / 180.0f), rotCount * (M_PI / 180.0f), 0.0f), Vector3f(0.5f, 0.5f, 0.5f));
-				Matrix4 view = Matrix4::identity();
-				view = view * Matrix4::translateMat(0.0f, 0.0f, -3.0f);
-
-				float degToRadFOV = 90.0f * (M_PI / 180.0f);
-				Matrix4 proj = Matrix4::projectionMat(degToRadFOV, Display::SCREEN_ASPECT_RATIO, 1.0f, 1000.0f);
+				model = Matrix4::transformMat(Vector3f(0.0f, 0.0f, 0.0f), Vector3f(0.0f, 0.0f, 0.0f), Vector3f(0.5f, 0.5f, 0.5f));
+				Matrix4 view = Matrix4::translateMat(0.0f, 0.0f, -3.0f);
+				Matrix4 proj = Matrix4::projectionMat(90.0f, Display::SCREEN_ASPECT_RATIO, 0.1f, 1000.0f);
 
 				Matrix4 res = proj * view * model;
 
@@ -97,8 +89,7 @@ void RenderManager::Render(float dt)
 				Vector3f transformedMid = res.matMultVec(midYVert);
 				Vector3f transformedMax = res.matMultVec(maxYVert);
 
-				basicPrimitive->FillTriangle(mainRenderTarget.getRenderTarget(), transformedMax, transformedMid, transformedMin);
-
+				
 				screen->SwapBuffers(mainRenderTarget.getRenderTarget());
 
 				

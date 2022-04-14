@@ -4,7 +4,6 @@
 
 #include "display.h"
 #include "render_target.h"
-#include "primitive.h"
 
 class RenderManager {
 
@@ -23,7 +22,6 @@ private:
 
 				Display *screen;
 				RenderTarget mainRenderTarget;
-				Primitive *basicPrimitive;
 				float rotCount;
 
 };
