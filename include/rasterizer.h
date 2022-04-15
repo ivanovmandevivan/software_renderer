@@ -10,12 +10,14 @@ class Rasterizer {
 
 public:
 
-
-
 				static void makeCoolPattern(Buffer<u32> *buffer);
 				static void testPattern(Buffer<u32> *buffer);
 
-				static void drawLine(Vector3f &p1, Vector3f &p2, const u32 &color, Buffer<u32> *buffer);
+				static void drawLine(Buffer<u32>* buffer, Vector3f &p1, Vector3f &p2, const u32 &color);
+
+				static int edgeOrientation(const Vector3f &a, const Vector3f &b, const Vector3f &c);
+				static void drawTriangle2D(Buffer<u32>* buffer, Vector3f &v0, Vector3f& v1, Vector3f& v2);
+				static void screenSpaceTransform(Buffer<u32>* buffer, Vector3f &v0, Vector3f &v1, Vector3f& v2);
 
 private:
 				Rasterizer() {};

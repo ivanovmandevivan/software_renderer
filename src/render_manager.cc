@@ -31,9 +31,15 @@ void RenderManager::Render(float dt)
 {
 				mainRenderTarget.clearBuffers();
 
-				Vector3f minYVert = Vector3f(-1.0f, -1.0f, 1.0f);
-				Vector3f midYVert = Vector3f(0.0f, 1.0f, 1.0f);
-				Vector3f maxYVert = Vector3f(1.0f, -1.0f, 1.0f);
+				Vector3f minYVert = Vector3f(1.0f, 1.0f, 0.0f);
+				Vector3f midYVert = Vector3f(-1.0f, 1.0f, 0.0f);
+				Vector3f maxYVert = Vector3f(0.0f, -1.0f, 0.0f);
+
+
+				//Vector3f minYVert = Vector3f(100.0f, 100.0f, 0.0f);
+				//Vector3f midYVert = Vector3f(150.0f, 200.0f, 0.0f);
+				//Vector3f maxYVert = Vector3f(80.0f, 300.0f, 0.0f);
+
 
 
 				// Here we can draw all the different models we pretend to draw:
@@ -72,8 +78,8 @@ void RenderManager::Render(float dt)
 
 				u32 whiteColor = 255 << 16 | 255 << 8 | 255;
 				u32 redColor = 255 << 16 | 0 << 8 | 0;
-				Rasterizer::drawLine(Vector3f(50.0f, 100.0f, 0.0f), Vector3f(200.0f, 300.0f, 0.0f), redColor, mainRenderTarget.getRenderTarget());
-				Rasterizer::drawLine(Vector3f(90.0f, 100.0f, 0.0f), Vector3f(120.0f, 300.0f, 0.0f), whiteColor, mainRenderTarget.getRenderTarget());
+				Rasterizer::drawLine(mainRenderTarget.getRenderTarget(), Vector3f(50.0f, 100.0f, 0.0f), Vector3f(200.0f, 300.0f, 0.0f), redColor);
+				Rasterizer::drawLine(mainRenderTarget.getRenderTarget(), Vector3f(90.0f, 100.0f, 0.0f), Vector3f(120.0f, 300.0f, 0.0f), whiteColor);
 
 				// # LINE RENDERING ^^
 
@@ -89,6 +95,7 @@ void RenderManager::Render(float dt)
 				Vector3f transformedMid = res.matMultVec(midYVert);
 				Vector3f transformedMax = res.matMultVec(maxYVert);
 
+				Rasterizer::drawTriangle2D(mainRenderTarget.getRenderTarget(), transformedMin, transformedMid, transformedMax);
 				
 				screen->SwapBuffers(mainRenderTarget.getRenderTarget());
 
