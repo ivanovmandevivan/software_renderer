@@ -16,10 +16,14 @@ public:
 				~Vector3() {};
 
 				// Variables:
-
-				T x;
-				T y;
-				T z;
+				union {
+								T data[3];
+								struct {
+												T x;
+												T y;
+												T z;
+								};
+				};
 
 				// Hideen W Proj Calculation Component
 				T w;

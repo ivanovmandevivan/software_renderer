@@ -23,6 +23,7 @@ private:
 				Display *screen;
 				RenderTarget mainRenderTarget;
 				float rotCount;
+				Model *monkeyModel;
 
 };
 

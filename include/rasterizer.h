@@ -17,6 +17,8 @@ public:
 
 				static int edgeOrientation(const Vector3f &a, const Vector3f &b, const Vector3f &c);
 				static void drawTriangle2D(Buffer<u32>* buffer, Vector3f &v0, Vector3f& v1, Vector3f& v2);
+				static void drawWireframe(Buffer<u32>* buffer, Vector3f *vertices);
+
 				static void screenSpaceTransform(Buffer<u32>* buffer, Vector3f &v0, Vector3f &v1, Vector3f& v2);
 
 private:

@@ -17,6 +17,7 @@ bool RenderManager::Initialize(Display& display)
 				}
 
 				rotCount = 0.0f;
+				monkeyModel = new Model("../data/obj/monkey.obj");
 
 				return true;
 }
@@ -83,7 +84,9 @@ void RenderManager::Render(float dt)
 
 				// # LINE RENDERING ^^
 
-				rotCount += (dt * 0.05f);
+				// # TRIANGLE 2D DRAWING: 
+
+				/*rotCount += (dt * 0.05f);
 				Matrix4 model = Matrix4::identity();
 				model = Matrix4::transformMat(Vector3f(0.0f, 0.0f, 0.0f), Vector3f(0.0f, 0.0f, 0.0f), Vector3f(0.5f, 0.5f, 0.5f));
 				Matrix4 view = Matrix4::translateMat(0.0f, 0.0f, -3.0f);
@@ -96,7 +99,11 @@ void RenderManager::Render(float dt)
 				Vector3f transformedMax = res.matMultVec(maxYVert);
 
 				Rasterizer::drawTriangle2D(mainRenderTarget.getRenderTarget(), transformedMin, transformedMid, transformedMax);
-				
+				*/
+
+				// # TRIANGLE 2D DRAWING ^^
+				mainRenderTarget.drawTriangularMesh(monkeyModel);
+
 				screen->SwapBuffers(mainRenderTarget.getRenderTarget());
 
 				

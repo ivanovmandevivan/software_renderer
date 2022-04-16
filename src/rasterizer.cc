@@ -26,10 +26,10 @@ void Rasterizer::testPattern(Buffer<u32>* buffer)
 void Rasterizer::drawLine(Buffer<u32>* buffer, Vector3f& p0, Vector3f& p1, const u32& color)
 {
 				u8 steep = 0;
-				int x0 = p0.x;
-				int y0 = p0.y;
-				int x1 = p1.x;
-				int y1 = p1.y;
+				int x0 = (p0.x + 1) * buffer->width * 0.5f;
+				int y0 = (-p0.y + 1) * buffer->height * 0.5f;
+				int x1 = (p1.x + 1) * buffer->width * 0.5f;
+				int y1 = (-p1.y + 1) * buffer->height * 0.5f;
 
 				// More different values of X compared to Y ones?
 				if (std::abs(x0 - x1) < std::abs(y0 - y1)) {
@@ -80,6 +80,8 @@ void Rasterizer::drawTriangle2D(Buffer<u32>* buffer, Vector3f& v0, Vector3f& v1,
 				v2 = Matrix4::NDCToScreenSpace(v2, buffer->width, buffer->height);
 
 				// (Edge functions sump up the rea of a triangle) And we expect a signed area (usually positive-area), if negative, we don't draw it at all.
+				// If v0,v1,v2 is counterclockwise the area will be positive, if clockwise, the area will be negative.
+				// Backface Culling in essence.
 				float area = edgeOrientation(v0, v1, v2);
 				if (area <= 0) return;
 				area = 1 / area;
@@ -130,6 +132,15 @@ void Rasterizer::drawTriangle2D(Buffer<u32>* buffer, Vector3f& v0, Vector3f& v1,
 								w1_row += b20;
 								w2_row += b01;
 				}
+}
+
+void Rasterizer::drawWireframe(Buffer<u32>* buffer, Vector3f* vertices)
+{
+				const u32 whiteColor = 255 << 16 | 255 << 8 | 255;
+				drawLine(buffer, vertices[0], vertices[1], whiteColor);
+				drawLine(buffer, vertices[1], vertices[2], whiteColor);
+				drawLine(buffer, vertices[0], vertices[2], whiteColor);
+
 }
 
 void Rasterizer::screenSpaceTransform(Buffer<u32>* buffer, Vector3f& v0, Vector3f& v1, Vector3f& v2)
