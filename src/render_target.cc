@@ -48,6 +48,10 @@ void RenderTarget::drawTriangularMesh(Model* model)
 												trianglePrimitive[i].perspectiveDivide();
 								}
 
+								// Backface Culling
+								// Clipping Faces Against the View Volume
+								
+
 								Rasterizer::drawWireframe(pixelBuffer, trianglePrimitive);
 				}
 

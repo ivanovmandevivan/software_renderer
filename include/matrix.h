@@ -2,6 +2,8 @@
 #ifndef __MATRIX_H__
 #define __MATRIX_H__ 1
 
+#define PI 3.14159265
+
 #include "vector3d.h"
 
 
@@ -324,15 +326,15 @@ public:
 								translateMatrix(1, 1) = 1.0f;
 								translateMatrix(2, 2) = 1.0f;
 
-								translateMatrix(3, 0) = dx;
-								translateMatrix(3, 1) = dy;
-								translateMatrix(3, 2) = dz;
+								translateMatrix(0, 3) = dx;
+								translateMatrix(1, 3) = dy; 
+								translateMatrix(2, 3) = dz;
 								translateMatrix(3, 3) = 1.0f;
 
 								return translateMatrix;
 				}
 
-				inline static Matrix4 transformMat(Vector3f& translate, Vector3f& rotation, Vector3f& scale = Vector3f(1.0f, 1.0f, 1.0f)) {
+				inline static Matrix4 transformMat(const Vector3f& translate, const Vector3f& rotation, const Vector3f& scale = Vector3f(1.0f, 1.0f, 1.0f)) {
 								Matrix4 rotMatrix = Matrix4::rotMat(rotation.x, rotation.y, rotation.z);
 								Matrix4 scaleMatrix = Matrix4::scaleMat(scale.x, scale.y, scale.z);
 								Matrix4 translateMatrix = Matrix4::translateMat(translate.x, translate.y, translate.z);
@@ -383,7 +385,7 @@ public:
 								projMatrix(3, 3) = 0;*/
 
 
-								float tanHalfFOVInverse = 1.0f / tanf((fov * 0.5f) * (M_PI / 180.0f));
+								float tanHalfFOVInverse = 1.0f / tanf((fov * 0.5f) * (PI / 180.0f));
 								projMatrix(0, 0) = tanHalfFOVInverse;
 								projMatrix(1, 1) = ar * tanHalfFOVInverse;
 								projMatrix(2, 2) = (near) / (far - near);

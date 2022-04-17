@@ -11,7 +11,6 @@ class Vector3 {
 public:
 				Vector3() : x(0), y(0), z(0), w(1) {};
 				Vector3(T n) : x(n), y(n), z(n), w(1) {};
-				Vector3(const T& v) : x(v.x), y(v.y), z(v.z), w(1) {};
 				Vector3(T x1, T y1, T z1) : x(x1), y(y1), z(z1), w(1) {};
 				~Vector3() {};
 
