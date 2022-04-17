@@ -3,6 +3,7 @@
 #define __MODEL_H__ 1
 
 #include "geometry.h"
+#include "frustum.h"
 #include "matrix.h"
 
 class Model {
@@ -14,12 +15,13 @@ public:
 
 				Geometry *getGeometry();
 				Matrix4 *getModelMatrix();
+				AABox *getBoundaryBox();
 
 private:
 
 				Geometry baseGeo;
 				Matrix4 modelMatrix;
-
+				AABox boundaryBox;
 };
 
 #endif

@@ -36,7 +36,7 @@ public:
 				void SetCameraInternals();
 				void UpdatePlanes(Matrix4 &viewMat, const Vector3f &cameraPos);
 				//int pointInFrustum(const Vector3f& p);
-				//int boxInFrustum(BoundaryBox &b)
+				bool boxInFrustum(const AABox &box);
 
 private:
 

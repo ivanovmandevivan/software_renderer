@@ -71,6 +71,25 @@ void Frustum::UpdatePlanes(Matrix4& viewMat, const Vector3f& cameraPos)
 				pl[FARP].setNormalAndPoint(forwardVector, farCenter);
 }
 
+// Thanks to Iñigo Quilez's boxInFrustum method (incorrect way) given that we are not going to cull humongous objects.
+bool Frustum::boxInFrustum(const AABox& box)
+{
+				for (int i = 0; i < 6; ++i) {
+								int out = 0;
+								out += ((pl[i].distance(Vector3f(box.minBoundary.x, box.minBoundary.y, box.minBoundary.z)) < 0.0f) ? 1 : 0);
+								out += ((pl[i].distance(Vector3f(box.maxBoundary.x, box.minBoundary.y, box.minBoundary.z)) < 0.0f) ? 1 : 0);
+								out += ((pl[i].distance(Vector3f(box.minBoundary.x, box.maxBoundary.y, box.minBoundary.z)) < 0.0f) ? 1 : 0);
+								out += ((pl[i].distance(Vector3f(box.maxBoundary.x, box.maxBoundary.y, box.minBoundary.z)) < 0.0f) ? 1 : 0);
+								out += ((pl[i].distance(Vector3f(box.minBoundary.x, box.minBoundary.y, box.maxBoundary.z)) < 0.0f) ? 1 : 0);
+								out += ((pl[i].distance(Vector3f(box.maxBoundary.x, box.minBoundary.y, box.maxBoundary.z)) < 0.0f) ? 1 : 0);
+								out += ((pl[i].distance(Vector3f(box.minBoundary.x, box.maxBoundary.y, box.maxBoundary.z)) < 0.0f) ? 1 : 0);
+								out += ((pl[i].distance(Vector3f(box.maxBoundary.x, box.maxBoundary.y, box.maxBoundary.z)) < 0.0f) ? 1 : 0);
+								if (out == 8) return false;
+				}
+
+				return true;
+}
+
 void AABox::generateAABB(const Geometry& geo)
 {
 				Vector3f tmpMin(std::numeric_limits<float>::min());

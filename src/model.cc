@@ -21,3 +21,8 @@ Matrix4* Model::getModelMatrix()
 {
 				return &modelMatrix;
 }
+
+AABox* Model::getBoundaryBox()
+{
+				return &boundaryBox;
+}
