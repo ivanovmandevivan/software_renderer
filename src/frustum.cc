@@ -15,6 +15,8 @@ void Plane::setNormalAndPoint(const Vector3f& mN, const Vector3f& p0)
 				D = -(n.dotProduct(p0));
 }
 
+Frustum::Frustum() {}
+
 Frustum::Frustum(float mFov, float mAR, float mNear, float mFar) {
 				fov = mFov;
 				AR = mAR;

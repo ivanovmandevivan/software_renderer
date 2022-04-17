@@ -4,6 +4,7 @@
 
 #include "buffer.h"
 #include "model.h"
+#include "camera.h"
 
 class RenderTarget {
 
@@ -19,11 +20,13 @@ public:
 				Buffer<u32>* getRenderTarget();
 				void clearBuffers();
 
+				void setRenderTargetCamera(Camera *camera);
 private:
 
 				bool createBuffers(int w, int h);
 				void packDataIntoTris(Vector3i &index, Vector3f *primitive, std::vector<Vector3f> &vals);
 
+				Camera *camera;
 				bool startUpComplete = false;
 				Buffer<u32> *pixelBuffer;
 

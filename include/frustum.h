@@ -25,6 +25,7 @@ struct AABox {
 class Frustum {
 
 public:
+				Frustum();
 				Frustum(float mFov, float mAR, float mNear, float mFar);
 				~Frustum();
 				Frustum(const Frustum&) = delete;

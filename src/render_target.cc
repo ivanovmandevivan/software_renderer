@@ -36,6 +36,9 @@ void RenderTarget::drawTriangularMesh(Model* model)
 				std::vector<Vector3f> *normals = &geoCaptured->normals;
 				int numFaces = geoCaptured->numFaces;
 
+
+
+
 				for (int j = 0; j < numFaces; ++j) {
 
 								Vector3i f = (*vertexIndices)[j];
@@ -66,6 +69,11 @@ Buffer<u32>* RenderTarget::getRenderTarget()
 void RenderTarget::clearBuffers()
 {
 				pixelBuffer->Clear(0x00);
+}
+
+void RenderTarget::setRenderTargetCamera(Camera* camera)
+{
+				this->camera = camera;
 }
 
 bool RenderTarget::createBuffers(int w, int h)
