@@ -23,6 +23,8 @@ bool Application::Initialize()
 								}
 				}
 
+				mainCamera = &renderManager.getCamera();
+
 				return isSuccessful;
 }
 
@@ -45,17 +47,24 @@ void Application::handleKeyCode(SDL_Event* event, u8& end, u32 dt)
 {
 				if (event->type == SDL_KEYDOWN) {
 								switch (event->key.keysym.sym) {
+								case SDLK_ESCAPE:
+												end = 1;
+												break;
 								case SDLK_w:
 												printf("Pressed W\n");
+												mainCamera->position += mainCamera->front * mainCamera->cameraSpeed;
 												break;
 								case SDLK_a:
 												printf("Pressed A\n");
+												mainCamera->position += mainCamera->side * mainCamera->cameraSpeed;
 												break;
 								case SDLK_s:
 												printf("Pressed S\n");
+												mainCamera->position -= mainCamera->front * mainCamera->cameraSpeed;
 												break;
 								case SDLK_d:
 												printf("Pressed D\n");
+												mainCamera->position -= mainCamera->side * mainCamera->cameraSpeed;
 												break;
 								case SDL_QUIT:
 												end = 1;
@@ -82,7 +91,7 @@ void Application::Update()
 								renderManager.Render(deltaTime);
 
 								deltaTime = SDL_GetTicks() - start;
-								printf("[F%d]: Delta Time (ms): %d\n", countFrames, deltaTime);
+								//printf("[F%d]: Delta Time (ms): %d\n", countFrames, deltaTime);
 								total += deltaTime;
 				}
 				printf("Shutting down...\n");

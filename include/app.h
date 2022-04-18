@@ -18,7 +18,7 @@ public:
 
 				bool Initialize();
 				
-				void Input(u8 &end, u32 dt);
+				void Input(u8& end, u32 dt);
 				void handleKeyCode(SDL_Event *event, u8 &end, u32 dt);
 
 				void Update();
@@ -26,6 +26,7 @@ public:
 
 				Display displayManager;
 				RenderManager renderManager;
+				Camera *mainCamera;
 
 };
 

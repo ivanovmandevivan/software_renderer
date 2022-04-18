@@ -146,7 +146,6 @@ void Rasterizer::drawTriangle3D(Buffer<u32>* buffer, IShader& shader, Vector3f* 
 				// (Edge functions sump up the rea of a triangle) And we expect a signed area (usually positive-area), if negative, we don't draw it at all.
 				// If v0,v1,v2 is counterclockwise the area will be positive, if clockwise, the area will be negative.
 				float area = edgeOrientation(vertices[0], vertices[1], vertices[2]);
-				printf("%f\n", area);
 				if (area <= 0) return;
 				area = 1 / area;
 
@@ -203,11 +202,11 @@ void Rasterizer::drawTriangle3D(Buffer<u32>* buffer, IShader& shader, Vector3f* 
 
 																outFragment = shader.fragment(uvPerspectiveCorrected);
 
-																int x = (int)outFragment.x;
-																int y = (int)outFragment.y;
-																int z = (int)outFragment.z;
+																int xColor = (int)outFragment.x;
+																int yColor = (int)outFragment.y;
+																int zColor = (int)outFragment.z;
 
-																(*buffer)(x, y) = x << 16 | y << 8 | z;
+																(*buffer)(x, y) = xColor << 16 | yColor << 8 | zColor;
 												}
 												w0 += a12;
 												w1 += a20;

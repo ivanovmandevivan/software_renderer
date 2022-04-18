@@ -83,8 +83,8 @@ void RenderTarget::drawTriangularMesh(Model* model)
 								}
 
 
-								Rasterizer::drawWireframe(pixelBuffer, trianglePrimitive);
-								//Rasterizer::drawTriangle3D(pixelBuffer, shader, trianglePrimitive);
+								//Rasterizer::drawWireframe(pixelBuffer, trianglePrimitive);
+								Rasterizer::drawTriangle3D(pixelBuffer, shader, trianglePrimitive);
 				}
 
 

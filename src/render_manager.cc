@@ -20,7 +20,7 @@ bool RenderManager::Initialize(Display& display)
 				monkeyModel = new Model("../data/obj/monkey.obj");
 				mainCamera = new Camera(Vector3f(2.0f, 0.0f, 4.0f), Vector3f(0.0f), Vector3f(0.0f, 1.0f, 0.0f), Vector3f(0.0f, 0.0f, -1.0f));
 				mainRenderTarget.setRenderTargetCamera(mainCamera);
-				monkeyModel->getGeometry()->debugVertices();
+				//monkeyModel->getGeometry()->debugVertices();
 
 				return true;
 }
@@ -29,6 +29,11 @@ void RenderManager::Shutdown()
 {
 				screen = nullptr;
 				mainRenderTarget.Shutdown();
+}
+
+Camera& RenderManager::getCamera()
+{
+			return *mainCamera;
 }
 
 void RenderManager::Render(float dt)
@@ -108,11 +113,11 @@ void RenderManager::Render(float dt)
 				
 				mainCamera->Update(dt);
 				bool isVisible = mainCamera->checkFrustumCulling(*monkeyModel->getBoundaryBox());
-				if (isVisible) {
+				//if (isVisible) {
 								rotCount += (dt * 0.05f);
 								monkeyModel->update(rotCount);
 								mainRenderTarget.drawTriangularMesh(monkeyModel);
-				}
+				//}
 
 				screen->SwapBuffers(mainRenderTarget.getRenderTarget());
 

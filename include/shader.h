@@ -23,7 +23,7 @@ struct BaseShader : public IShader {
 				}
 
 				Vector3f fragment(const Vector3f& uv) override {
-								return whiteColor * intensity;
+								return whiteColor;
 				}
 };
 

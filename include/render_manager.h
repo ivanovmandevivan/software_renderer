@@ -14,6 +14,7 @@ public:
 				bool Initialize(Display &display);
 				void Shutdown();
 
+				Camera& getCamera();
 				void Render(float dt);
 
 private:
