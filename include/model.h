@@ -13,6 +13,8 @@ public:
 				~Model();
 				Model(const Model&) = delete;
 
+				void update(float rot);
+
 				Geometry *getGeometry();
 				Matrix4 *getModelMatrix();
 				AABox *getBoundaryBox();

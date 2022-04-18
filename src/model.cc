@@ -7,10 +7,18 @@ Model::Model(const std::string filePath, const Vector3f& translation, const Vect
 				if (!OBJLoader::loadOBJ(baseGeo, filePath)) {
 								printf("Model with path: %s could not be loaded correctly!\n", filePath.c_str());
 				}
+				boundaryBox.generateAABB(baseGeo);
+				baseGeo.buildFaceNormals();
 				modelMatrix = Matrix4::transformMat(translation, rotation, scale);
 }
 
 Model::~Model() {}
+
+void Model::update(float rot)
+{
+				modelMatrix = Matrix4::transformMat(Vector3f(0.0f), Vector3f(0.0f, rot * (PI / 180.0f), 0.0f));
+				boundaryBox.updateBoundaries(modelMatrix);
+}
 
 Geometry* Model::getGeometry()
 {

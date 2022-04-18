@@ -42,7 +42,6 @@ bool OBJLoader::loadOBJ(Geometry& geo, std::string filePath)
 												geo.vertexIndices.push_back(indices[0]);
 												geo.uvIndices.push_back(indices[1]);
 												geo.normalsIndices.push_back(indices[2]);
-
 								}
 				}
 				geo.numVertices = geo.vertices.size();

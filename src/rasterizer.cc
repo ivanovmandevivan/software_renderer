@@ -3,13 +3,13 @@
 #include <algorithm>
 #include "matrix.h"
 
-void Rasterizer::makeCoolPattern(Buffer<u32> *buffer)
+void Rasterizer::makeCoolPattern(Buffer<u32>* buffer)
 {
 				for (int y = 0; y < buffer->height; ++y) {
 								for (int x = 0; x < buffer->width; ++x) {
 												u8 r = x * 2 % 256;
-												u8 g = y/8 % 256;
-												u8 b = r*y % 256;
+												u8 g = y / 8 % 256;
+												u8 b = r * y % 256;
 												u32 color = r << 16 | g << 8 | b; // Texel Color Construction
 												(*buffer)(x, y) = color;
 								}
@@ -19,7 +19,7 @@ void Rasterizer::makeCoolPattern(Buffer<u32> *buffer)
 
 void Rasterizer::testPattern(Buffer<u32>* buffer)
 {
-				
+
 				(*buffer)(600, 200) = 255 << 16 | 0 << 8 | 0;
 }
 
@@ -58,8 +58,8 @@ void Rasterizer::drawLine(Buffer<u32>* buffer, Vector3f& p0, Vector3f& p1, const
 
 								error2 += derror2;
 								if (error2 > dx) {
-												y += (y1> y0) ? 1: -1;
-												error2 -= dx*2;
+												y += (y1 > y0) ? 1 : -1;
+												error2 -= dx * 2;
 								}
 				}
 
@@ -86,11 +86,11 @@ void Rasterizer::drawTriangle2D(Buffer<u32>* buffer, Vector3f& v0, Vector3f& v1,
 				if (area <= 0) return;
 				area = 1 / area;
 
-				int xMin = std::min({v0.x, v1.x, v2.x});
-				int yMin = std::min({v0.y, v1.y, v2.y});
-				
-				int xMax = std::max({v0.x, v1.x, v2.x});
-				int yMax = std::max({v0.y, v1.y, v2.y});
+				int xMin = std::min({ v0.x, v1.x, v2.x });
+				int yMin = std::min({ v0.y, v1.y, v2.y });
+
+				int xMax = std::max({ v0.x, v1.x, v2.x });
+				int yMax = std::max({ v0.y, v1.y, v2.y });
 
 				// Clip
 				xMin = std::max(xMin, 0);
@@ -132,6 +132,92 @@ void Rasterizer::drawTriangle2D(Buffer<u32>* buffer, Vector3f& v0, Vector3f& v1,
 								w1_row += b20;
 								w2_row += b01;
 				}
+}
+
+void Rasterizer::drawTriangle3D(Buffer<u32>* buffer, IShader& shader, Vector3f* vertices)
+{
+				Vector3f hiddenWs = Vector3f(1.0f / vertices[0].w, 1.0f / vertices[1].w, 1.0f / vertices[2].w);
+
+				////screenSpaceTransform(buffer, v0, v1, v2);
+				vertices[0] = Matrix4::NDCToScreenSpace(vertices[0], buffer->width, buffer->height);
+				vertices[1] = Matrix4::NDCToScreenSpace(vertices[1], buffer->width, buffer->height);
+				vertices[2] = Matrix4::NDCToScreenSpace(vertices[2], buffer->width, buffer->height);
+
+				// (Edge functions sump up the rea of a triangle) And we expect a signed area (usually positive-area), if negative, we don't draw it at all.
+				// If v0,v1,v2 is counterclockwise the area will be positive, if clockwise, the area will be negative.
+				float area = edgeOrientation(vertices[0], vertices[1], vertices[2]);
+				printf("%f\n", area);
+				if (area <= 0) return;
+				area = 1 / area;
+
+				int xMin = std::min({ vertices[0].x, vertices[1].x, vertices[2].x });
+				int yMin = std::min({ vertices[0].y, vertices[1].y, vertices[2].y });
+
+				int xMax = std::max({ vertices[0].x, vertices[1].x, vertices[2].x });
+				int yMax = std::max({ vertices[0].y, vertices[1].y, vertices[2].y });
+
+				// Clip
+				xMin = std::max(xMin, 0);
+				yMin = std::max(yMin, 0);
+				xMax = std::min(xMax, buffer->width - 1);
+				yMax = std::min(yMax, buffer->height - 1);
+
+				// We derivate this constants A01, B01, C01 | A12, B12 | A20, B20 from the equation:
+				// (v0y - v1y)Px + (v1x - v0x)Py + (v0x * v1y - v0y * v1x) which translates to --> A01Px + B01Py + C01
+				// From there we can extrapolate to all the vertices of the triangle, v0, v1 and v2.
+				// We create the rows, for each pixel movement to the right, we sum AXX respectively (depending on the edge)
+				// And for the Y coordinate, for each scanline row (JUMP in Y) we add BXX (depending on the edge)
+				int a01 = vertices[0].y - vertices[1].y; int b01 = vertices[1].x - vertices[0].x;
+				int a12 = vertices[1].y - vertices[2].y; int b12 = vertices[2].x - vertices[1].x;
+				int a20 = vertices[2].y - vertices[0].y; int b20 = vertices[0].x - vertices[2].x;
+
+				Vector3f p = Vector3f((float)xMin, (float)yMin, 0.0f);
+				int w0_row = edgeOrientation(vertices[1], vertices[2], p);
+				int w1_row = edgeOrientation(vertices[2], vertices[0], p);
+				int w2_row = edgeOrientation(vertices[0], vertices[1], p);
+
+				Vector3f perspectiveCorrectedBarycentric;
+				Vector3f uvw;
+				float areaPerspective = 0.0f;
+				Vector3f uvPerspectiveCorrected(0.0f);
+				Vector3f outFragment(0.0f);
+				for (int y = yMin; y < yMax; ++y) {
+
+								int w0 = w0_row;
+								int w1 = w1_row;
+								int w2 = w2_row;
+
+								for (int x = xMin; x < xMax; ++x) {
+
+												// To check the barycentric variables, we just need to check if any of the 3 bites is >= 0, thus we mask them with a bitwise OR and check the result.
+												if ((w0 | w1 | w2) >= 0) {
+
+																// ZBufferCheck TODO<<
+
+																// If it passes, Get Perspective Correct Barycentric Coords
+																uvw = Vector3f(w0, w1, w2);
+																perspectiveCorrectedBarycentric = uvw * hiddenWs;
+																areaPerspective = 1.0f / (perspectiveCorrectedBarycentric.x + perspectiveCorrectedBarycentric.y + perspectiveCorrectedBarycentric.z);
+																uvPerspectiveCorrected.x = perspectiveCorrectedBarycentric.y * areaPerspective;
+																uvPerspectiveCorrected.y = perspectiveCorrectedBarycentric.z * areaPerspective;
+
+																outFragment = shader.fragment(uvPerspectiveCorrected);
+
+																int x = (int)outFragment.x;
+																int y = (int)outFragment.y;
+																int z = (int)outFragment.z;
+
+																(*buffer)(x, y) = x << 16 | y << 8 | z;
+												}
+												w0 += a12;
+												w1 += a20;
+												w2 += a01;
+								}
+								w0_row += b12;
+								w1_row += b20;
+								w2_row += b01;
+				}
+
 }
 
 void Rasterizer::drawWireframe(Buffer<u32>* buffer, Vector3f* vertices)

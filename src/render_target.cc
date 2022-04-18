@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "render_target.h"
 #include "rasterizer.h"
+#include "shader.h"
 
 RenderTarget::RenderTarget() {}
 
@@ -30,6 +31,7 @@ void RenderTarget::drawTriangularMesh(Model* model)
 				std::vector<Vector3i> *vertexIndices = &geoCaptured->vertexIndices;
 				std::vector<Vector3i> *uvIndices = &geoCaptured->uvIndices;
 				std::vector<Vector3i> *normalIndices = &geoCaptured->normalsIndices;
+				std::vector<Vector3f> *faceNormals = &geoCaptured->faceNormals;
 
 				std::vector<Vector3f> *vertices = &geoCaptured->vertices;
 				std::vector<Vector3f> *uvs = &geoCaptured->uvs;
@@ -37,7 +39,12 @@ void RenderTarget::drawTriangularMesh(Model* model)
 				int numFaces = geoCaptured->numFaces;
 
 
+				BaseShader shader;
+				shader.modelView = (camera->viewMatrix) * (*(model->getModelMatrix()));
+				shader.modelViewProjection = (camera->projectionMatrix) * shader.modelView;
+				shader.view = camera->viewMatrix;
 
+				Matrix4 objectSpaceMatrix = (*model->getModelMatrix()).inverse();
 
 				for (int j = 0; j < numFaces; ++j) {
 
@@ -47,18 +54,47 @@ void RenderTarget::drawTriangularMesh(Model* model)
 
 								Vector3f trianglePrimitive[3];
 								packDataIntoTris(f, trianglePrimitive, *vertices);
+								
+								// Backface Culling
+								//if (backfaceCull((*faceNormals)[j], trianglePrimitive[0], objectSpaceMatrix)) {
+								//				continue; // We exclude parallel faces too, so we only cull the ones that are < 0 as far as normal to eye camera pos angle.
+								//}
+
+								// Vertex Shader:
+								for (int i = 0; i < 3; ++i) {
+												trianglePrimitive[i] = shader.vertex(trianglePrimitive[i], (*normals)[i], (*uvs)[i], i);
+								}
+
+								// Clipping Faces Against the View Volume
+								/*int count = 0;
+								for (int i = 0; i < 3; ++i) {
+												Vector3f testingVertex = trianglePrimitive[i];
+												bool isInside = (-testingVertex.w <= testingVertex.x <= testingVertex.w)
+																&& (-testingVertex.w <=  testingVertex.y <= testingVertex.w)
+																&& (0 <= testingVertex.z <= testingVertex.w);
+												if (!isInside) ++count;
+								}
+
+								if (count == 3) continue;*/
+
+								// Perspective Divide
 								for (int i = 0; i < 3; ++i) {
 												trianglePrimitive[i].perspectiveDivide();
 								}
 
-								// Backface Culling
-								// Clipping Faces Against the View Volume
-								
 
 								Rasterizer::drawWireframe(pixelBuffer, trianglePrimitive);
+								//Rasterizer::drawTriangle3D(pixelBuffer, shader, trianglePrimitive);
 				}
 
 
+}
+
+bool RenderTarget::backfaceCull(const Vector3f& normalFace, const Vector3f& vert, Matrix4& objectMatrix)
+{
+				Vector3f viewDirection = objectMatrix.matMultVec(camera->position) - vert; // Get view direction towards object in object space (we transform camera position to object)
+				viewDirection.normalized();
+				return normalFace.dotProduct(viewDirection) < 0.0f;
 }
 
 Buffer<u32>* RenderTarget::getRenderTarget()

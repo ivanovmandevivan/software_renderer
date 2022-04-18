@@ -14,6 +14,7 @@ public:
 				Geometry(const Geometry&) = delete;
 
 				void debugVertices();
+				void buildFaceNormals();
 
 				inline s32 getNumVertices() const {
 								return vertices.size();
@@ -36,6 +37,7 @@ public:
 				std::vector<Vector3i> vertexIndices;
 				std::vector<Vector3i> uvIndices;
 				std::vector<Vector3i> normalsIndices;
+				std::vector<Vector3f> faceNormals;
 };
 
 

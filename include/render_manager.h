@@ -22,6 +22,9 @@ private:
 
 				Display *screen;
 				RenderTarget mainRenderTarget;
+
+
+				Camera *mainCamera;
 				float rotCount;
 				Model *monkeyModel;
 

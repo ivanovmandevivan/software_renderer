@@ -16,6 +16,7 @@ public:
 				void Shutdown();
 				
 				void drawTriangularMesh(Model *model);
+				bool backfaceCull(const Vector3f& normal, const Vector3f& vert, Matrix4& objectMatrix);
 
 				Buffer<u32>* getRenderTarget();
 				void clearBuffers();

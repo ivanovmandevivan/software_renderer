@@ -18,6 +18,9 @@ bool RenderManager::Initialize(Display& display)
 
 				rotCount = 0.0f;
 				monkeyModel = new Model("../data/obj/monkey.obj");
+				mainCamera = new Camera(Vector3f(2.0f, 0.0f, 4.0f), Vector3f(0.0f), Vector3f(0.0f, 1.0f, 0.0f), Vector3f(0.0f, 0.0f, -1.0f));
+				mainRenderTarget.setRenderTargetCamera(mainCamera);
+				monkeyModel->getGeometry()->debugVertices();
 
 				return true;
 }
@@ -102,7 +105,14 @@ void RenderManager::Render(float dt)
 				*/
 
 				// # TRIANGLE 2D DRAWING ^^
-				mainRenderTarget.drawTriangularMesh(monkeyModel);
+				
+				mainCamera->Update(dt);
+				bool isVisible = mainCamera->checkFrustumCulling(*monkeyModel->getBoundaryBox());
+				if (isVisible) {
+								rotCount += (dt * 0.05f);
+								monkeyModel->update(rotCount);
+								mainRenderTarget.drawTriangularMesh(monkeyModel);
+				}
 
 				screen->SwapBuffers(mainRenderTarget.getRenderTarget());
 

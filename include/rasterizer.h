@@ -5,6 +5,7 @@
 #include "SDL.h"
 #include "buffer.h"
 #include "vector3d.h"
+#include "shader.h"
 
 class Rasterizer {
 
@@ -17,6 +18,7 @@ public:
 
 				static int edgeOrientation(const Vector3f &a, const Vector3f &b, const Vector3f &c);
 				static void drawTriangle2D(Buffer<u32>* buffer, Vector3f &v0, Vector3f& v1, Vector3f& v2);
+				static void drawTriangle3D(Buffer<u32>* buffer, IShader &shader, Vector3f *vertices);
 				static void drawWireframe(Buffer<u32>* buffer, Vector3f *vertices);
 
 				static void screenSpaceTransform(Buffer<u32>* buffer, Vector3f &v0, Vector3f &v1, Vector3f& v2);
