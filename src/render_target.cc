@@ -45,6 +45,7 @@ void RenderTarget::drawTriangularMesh(Model* model)
 				shader.view = camera->viewMatrix;
 
 				Matrix4 objectSpaceMatrix = (*model->getModelMatrix()).inverse();
+				int count = 0;
 
 				for (int j = 0; j < numFaces; ++j) {
 
@@ -56,9 +57,9 @@ void RenderTarget::drawTriangularMesh(Model* model)
 								packDataIntoTris(f, trianglePrimitive, *vertices);
 								
 								// Backface Culling
-								//if (backfaceCull((*faceNormals)[j], trianglePrimitive[0], objectSpaceMatrix)) {
-								//				continue; // We exclude parallel faces too, so we only cull the ones that are < 0 as far as normal to eye camera pos angle.
-								//}
+								if (backfaceCull((*faceNormals)[j], trianglePrimitive[0], objectSpaceMatrix)) {
+												continue; // We exclude parallel faces too, so we only cull the ones that are < 0 as far as normal to eye camera pos angle.
+								}
 
 								// Vertex Shader:
 								for (int i = 0; i < 3; ++i) {
@@ -66,7 +67,6 @@ void RenderTarget::drawTriangularMesh(Model* model)
 								}
 
 								// Clipping Faces Against the View Volume
-								/*int count = 0;
 								for (int i = 0; i < 3; ++i) {
 												Vector3f testingVertex = trianglePrimitive[i];
 												bool isInside = (-testingVertex.w <= testingVertex.x <= testingVertex.w)
@@ -74,8 +74,7 @@ void RenderTarget::drawTriangularMesh(Model* model)
 																&& (0 <= testingVertex.z <= testingVertex.w);
 												if (!isInside) ++count;
 								}
-
-								if (count == 3) continue;*/
+								if (count == 3) continue;
 
 								// Perspective Divide
 								for (int i = 0; i < 3; ++i) {
@@ -94,7 +93,7 @@ bool RenderTarget::backfaceCull(const Vector3f& normalFace, const Vector3f& vert
 {
 				Vector3f viewDirection = objectMatrix.matMultVec(camera->position) - vert; // Get view direction towards object in object space (we transform camera position to object)
 				viewDirection.normalized();
-				return normalFace.dotProduct(viewDirection) < 0.0f;
+				return normalFace.dotProduct(viewDirection) >= 0.0f;
 }
 
 Buffer<u32>* RenderTarget::getRenderTarget()

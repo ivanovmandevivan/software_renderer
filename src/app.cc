@@ -92,10 +92,12 @@ void Application::Update()
 
 								deltaTime = SDL_GetTicks() - start;
 								//printf("[F%d]: Delta Time (ms): %d\n", countFrames, deltaTime);
+								printf("Current FPS: %f\n", countFrames / (total / 1000.0));
 								total += deltaTime;
 				}
 				printf("Shutting down...\n");
 				printf("Average frame time over %d frames: %2.fms \n", countFrames, (float)(total/countFrames));
+				system("pause");
 }
 
 void Application::Shutdown()

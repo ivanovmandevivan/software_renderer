@@ -113,11 +113,11 @@ void RenderManager::Render(float dt)
 				
 				mainCamera->Update(dt);
 				bool isVisible = mainCamera->checkFrustumCulling(*monkeyModel->getBoundaryBox());
-				//if (isVisible) {
+				if (isVisible) {
 								rotCount += (dt * 0.05f);
 								monkeyModel->update(rotCount);
 								mainRenderTarget.drawTriangularMesh(monkeyModel);
-				//}
+				}
 
 				screen->SwapBuffers(mainRenderTarget.getRenderTarget());
 
